@@ -4,15 +4,13 @@ import ReactMarkdown from 'react-markdown'
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
 const SUMMARY_DISPLAY_TEXT = "Can you summarize my biggest weaknesses per section?"
-const SUMMARY_PROMPT = `Summarize my biggest weaknesses per section based on my score. Answer ONLY in this exact format, nothing else -- no introduction, no conclusion, no extra explanation:
-
+const SUMMARY_PROMPT = `Summarize my biggest weaknesses per section based on my questionnaire answers. Use the actual answers provided to identify specific, real issues -- 
+not generic topic-level statements. Answer ONLY in this exact format, nothing else -- no introduction, no conclusion, no extra explanation:
 
 **[Section name]**
-- [weakness, a few words]
-- [weakness, a few words]
-- [weakness, a few words]
-- [weakness, a few words]
-- [weakness, a few words]
+- [specific weakness, a few words]
+- [specific weakness, a few words]
+- [specific weakness, a few words]
 
 Repeat that block for all three sections. Keep every bullet short -- a phrase, not a sentence.`
 
