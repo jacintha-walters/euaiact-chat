@@ -35,7 +35,7 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Vite dev server default
     "http://localhost:3000",
-    "euaiact-chat-6gxsfzczm-euaiact-chat.vercel.app",  # <-- add once deployed
+    "https://euaiact-chat.vercel.app/",  # <-- add once deployed
 ]
 
 app.add_middleware(
