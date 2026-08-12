@@ -150,40 +150,42 @@ function GateForm() {
   if (result && result.tier === 'high-risk') {
     return (
       <div>
-        <h2>Your system is marked as high-risk</h2>
-
-        <p>
-          It's important to know that it's not the AI model itself that makes it
-          high-risk — it depends on where and how it's applied. A model used in an
-          Annex III domain (like employment, credit scoring, or education) is high-risk;
-          the exact same model used elsewhere might not be.
-        </p>
-
-        <p>
-          Right now, the EU AI Act's high-risk obligations aren't fully in effect yet for
-          existing systems — but now is the time to take action. Per{' '}
-          <strong>December 2027</strong>, you'll need to be compliant.
-        </p>
-
-        <p>
-          The following questionnaire contains <strong>50 questions</strong> spread across
-          three sections — Data, Documentation & Communication; Model Risk; and
-          Development Lifecycle. It's based on the paper{' '}
-          <em>"Complying with the EU AI Act"</em> by Jacintha Walters, Diptish Dey,
-          Debarati Bhaumik, and Sophie Horsman, published in 2023 and currently cited over
-          50 times. It should take around 10 minutes to complete.
-        </p>
-
-        <p>
-          Afterward, you'll get an overview of your current compliance score, and the
-          option to talk with a specialized chatbot about your score and how your
-          organization could improve.
-        </p>
-
         {!showQuestionnaire && (
-          <button className="btn-primary" onClick={() => setShowQuestionnaire(true)}>
-            Continue to the full compliance questionnaire
-          </button>
+          <>
+            <h2>Your system is marked as high-risk</h2>
+
+            <p>
+              It's important to know that it's not the AI model itself that makes it
+              high-risk — it depends on where and how it's applied. A model used in an
+              Annex III domain (like employment, credit scoring, or education) is
+              high-risk; the exact same model used elsewhere might not be.
+            </p>
+
+            <p>
+              Right now, the EU AI Act's high-risk obligations aren't fully in effect yet
+              for existing systems — but now is the time to take action. Per{' '}
+              <strong>December 2027</strong>, you'll need to be compliant.
+            </p>
+
+            <p>
+              The following questionnaire contains <strong>50 questions</strong> spread
+              across three sections — Data, Documentation & Communication; Model Risk; and
+              Development Lifecycle. It's based on the paper{' '}
+              <em>"Complying with the EU AI Act"</em> by Jacintha Walters, Diptish Dey,
+              Debarati Bhaumik, and Sophie Horsman, published in 2023 and currently cited
+              over 50 times. It should take around 10 minutes to complete.
+            </p>
+
+            <p>
+              Afterward, you'll get an overview of your current compliance score, and the
+              option to talk with a specialized chatbot about your score and how your
+              organization could improve.
+            </p>
+
+            <button className="btn-primary" onClick={() => setShowQuestionnaire(true)}>
+              Continue to the full compliance questionnaire
+            </button>
+          </>
         )}
         {showQuestionnaire && <Questionnaire />}
       </div>
