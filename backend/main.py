@@ -112,10 +112,17 @@ class SectionScore(BaseModel):
     section: str
     score_percent: float
 
+class AnsweredQuestion(BaseModel):
+    text: str
+    section: str
+    answer_given: str
+    score_percent: float
+
 
 class ScoreResult(BaseModel):
     overall_percent: float
     sections: list[SectionScore]
+    all_questions: list[AnsweredQuestion]
 
 
 @app.get("/api/questionnaire/questions")
@@ -142,6 +149,7 @@ def get_points_for_answer(question: dict, raw_answer) -> float:
 @app.post("/api/questionnaire/submit", response_model=ScoreResult)
 def submit_questionnaire(payload: QuestionnaireAnswers):
     section_totals: dict[str, list[tuple[float, float]]] = {}
+    all_questions = []
 
     for question in QUESTIONS:
         qid = question["id"]
@@ -149,6 +157,18 @@ def submit_questionnaire(payload: QuestionnaireAnswers):
             continue
         points = get_points_for_answer(question, payload.answers[qid])
         section_totals.setdefault(question["section"], []).append((points, question["max_points"]))
+
+        raw_answer = payload.answers[qid]
+        # multi_select answers arrive as a list -- join into one readable string
+        answer_display = ", ".join(raw_answer) if isinstance(raw_answer, list) else raw_answer
+
+        if question["max_points"] > 0:
+            all_questions.append(AnsweredQuestion(
+                text=question["text"],
+                section=question["section"],
+                answer_given=answer_display,
+                score_percent=round((points / question["max_points"]) * 100, 1),
+            ))
 
     section_scores = []
     total_points = 0.0
@@ -164,7 +184,7 @@ def submit_questionnaire(payload: QuestionnaireAnswers):
 
     overall = round((total_points / total_max) * 100, 1) if total_max else 0.0
 
-    return ScoreResult(overall_percent=overall, sections=section_scores)
+    return ScoreResult(overall_percent=overall, sections=section_scores, all_questions=all_questions)
 
 class ChatMessage(BaseModel):
     role: str
@@ -189,6 +209,11 @@ def build_system_prompt(score_result: ScoreResult, retrieved_articles: list[dict
         f"- {s.section}: {s.score_percent}%" for s in score_result.sections
     )
 
+    all_answers_summary = "\n".join(
+        f"- [{q.section}] \"{q.text}\" -> answered \"{q.answer_given}\" (scored {q.score_percent}%)"
+        for q in score_result.all_questions
+    )
+
     articles_text = "\n\n".join(
         f"### Article {a['article_number']}: {a['title']}\n{a['text']}"
         for a in retrieved_articles
@@ -202,16 +227,20 @@ Overall compliance score: {score_result.overall_percent}%
 Section breakdown:
 {section_summary}
 
+Every question they answered, their actual answer, and how it scored:
+{all_answers_summary}
+
 RELEVANT AI ACT TEXT (use this to ground your answer -- cite specific
 article numbers when relevant, and do not cite articles that are not
 provided below):
 {articles_text}
 
 Answer the user's question as a knowledgeable, practical consultant would --
-reference their actual score where relevant, cite specific articles from the
-text above when making legal claims, and give concrete, actionable advice.
-If the provided article text doesn't cover what they're asking, say so
-honestly rather than guessing."""
+base your assessment of their weaknesses on the actual answers listed above,
+not just section percentages. Cite specific articles from the text above
+when making legal claims, and give concrete, actionable advice. If the
+provided article text doesn't cover what they're asking, say so honestly
+rather than guessing."""
 
 
 @app.post("/api/chat", response_model=ChatResponse)
