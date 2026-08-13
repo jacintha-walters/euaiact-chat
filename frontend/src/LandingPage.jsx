@@ -41,7 +41,8 @@ function LandingPage({ onStart }) {
       <p>Here's how it works:</p>
 
       <ol style={{ lineHeight: '1.8' }}>
-        <li><strong>Determine your risk level</strong> — a few quick questions identify which category your AI system falls into under the Act.</li>
+        <li><strong>Determine your risk level</strong> — a few quick questions identify which category your AI system falls into under the Act.
+        If the result is that your model is high-risk, you will continue with steps 2 and 3.</li>
         <li><strong>Answer questions based on your risk level</strong> — to identify weaknesses and calculate a compliance score.</li>
         <li><strong>Talk with an EU AI Act-focused assistant</strong> — grounded in the actual text of the Act, to answer your specific questions and discuss how to close the gaps.</li>
       </ol>
