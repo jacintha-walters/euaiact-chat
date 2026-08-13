@@ -46,7 +46,7 @@ const QUESTIONS = [
   },
   {
     key: 'transparency_trigger',
-    text: "Does your AI system talk directly with people (chatbot), generate/manipulate audio-video-image-text content, or do emotion/biometric recognition outside the areas above?",
+    text: "Does your AI system talk directly with people (chatbot), generate/manipulate audio-video-image-text content, or use emotion/biometric recognition outside the areas above?",
     info: (
         <>
         Answer yes if any of the following apply:
