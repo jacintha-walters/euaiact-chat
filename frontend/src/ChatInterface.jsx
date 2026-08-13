@@ -145,7 +145,7 @@ const sendMessage = async (question, displayText = question) => {
             )}
           </div>
         ))}
-        {loading && <p style={{ color: '#888' }}>Thinking...</p>}
+        {loading && <p style={{ color: '#888' }}>Thinking... this can take up to 10 seconds.</p>}
         <div ref={bottomRef} />
       </div>
 

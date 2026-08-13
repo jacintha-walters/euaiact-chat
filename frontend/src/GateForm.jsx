@@ -87,6 +87,16 @@ function GateForm() {
     setLoading(false)
   }
 
+  const handleDemoFill = () => {
+    const demoAnswers = {
+      prohibited_practice: false,
+      is_gpai_model: false,
+      annex_iii_domain: true,
+      transparency_trigger: true,
+    }
+    setAnswers(demoAnswers)
+  }
+
   if (result && result.tier === 'prohibited') {
     return (
       <div>
@@ -297,6 +307,11 @@ function GateForm() {
         However, if we apply the same recommender technology in a recruitment system, it becomes high-risk. 
         Answer the questions below to determine your risk level. 
       </p>
+            <div style={{ marginBottom: '1.5rem', textAlign: 'right' }}>
+        <button className="btn-secondary" onClick={handleDemoFill}>
+          I want a demo
+        </button>
+      </div>
      {QUESTIONS.map((q) => (
         <div key={q.key} style={{ marginBottom: '1.5rem' }}>
           <p style={{ display: 'inline' }}>{q.text}</p>
