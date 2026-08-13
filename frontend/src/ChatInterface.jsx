@@ -162,7 +162,7 @@ const sendMessage = async (question, displayText = question) => {
         <span style={{ fontSize: '0.75rem', color: input.length > 1800 ? '#c62828' : '#999', marginLeft: '0.5rem', alignSelf: 'flex-end' }}>
           {input.length}/2000
         </span>
-        <button onClick={sendMessage} disabled={loading} style={{ marginLeft: '0.5rem' }}>
+        <button onClick={handleSend} disabled={loading} style={{ marginLeft: '0.5rem' }}>
           Send
         </button>
       </div>
