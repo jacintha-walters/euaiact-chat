@@ -1,3 +1,11 @@
+/**
+ * Modal - a generic reusable overlay used for the "Why is this made?" and
+ * "Who made this?" info panels in App.jsx.
+ *
+ * Renders a semi-transparent backdrop with a centered content box. 
+ */
+
+
 function Modal({ title, onClose, children }) {
   return (
     <div

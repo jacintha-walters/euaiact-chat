@@ -1,3 +1,13 @@
+/**
+ * GateForm - the risk-tier classification flow (Step 1 of the assessment).
+ *
+ * Asks 4 yes/no questions and routes the user to one of 5 dedicated result
+ * pages based on their answers: prohibited, gpai, high-risk, limited-risk,
+ * or minimal-risk. The high-risk page is the only one that leads further --
+ * it reveals the Questionnaire component (Step 2) once the user continues,
+ * which in turn renders ChatInterface (Step 3) once a score exists.
+ */
+
 import { useState } from 'react'
 import Questionnaire from './Questionnaire.jsx'
 
@@ -240,17 +250,35 @@ function GateForm() {
     )
   }
 
-  if (result) {
+  if (result && result.tier === 'minimal-risk') {
     return (
       <div>
-        <h2>Result: {result.tier}</h2>
-        <p>{result.explanation}</p>
-        {result.tier === 'high-risk' && !showQuestionnaire && (
-          <button className="btn-primary" onClick={() => setShowQuestionnaire(true)}>
-            Continue to the full compliance questionnaire
-          </button>
-        )}
-        {showQuestionnaire && <Questionnaire />}
+        <h2>Your system is marked as minimal-risk</h2>
+
+        <p>
+          Based on your answers, your AI system doesn't currently fall under any of the
+          Act's specific obligation tiers — it's not prohibited, not a general-purpose
+          model, not used in a high-risk domain, and doesn't trigger the transparency
+          rules that apply to things like chatbots or synthetic content.
+        </p>
+
+        <p>
+          This covers the majority of everyday AI use cases — things like spam filters,
+          recommendation systems, or internal tooling that doesn't interact directly with
+          the public or make high-stakes decisions about people. For systems in this
+          category, the EU AI Act doesn't currently impose specific legal obligations.
+        </p>
+
+        <p style={{ fontStyle: 'italic', color: '#555' }}>
+          Worth keeping in mind: if your system's use case changes over time — say, it
+          starts being used in an Annex III domain, or begins interacting directly with
+          users — its risk classification could change too. It's worth revisiting this
+          assessment if your system's role evolves.
+        </p>
+
+        <button className="btn-secondary" onClick={() => { setResult(null); setAnswers({}) }}>
+          Go back to the risk questions
+        </button>
       </div>
     )
   }

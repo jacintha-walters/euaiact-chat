@@ -1,3 +1,7 @@
+/**
+ * WhoModal - content for the "Who made this?" info panel.
+ */
+
 function WhoModal() {
   return (
     <div>

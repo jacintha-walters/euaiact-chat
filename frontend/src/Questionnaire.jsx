@@ -1,3 +1,15 @@
+/**
+ * Questionnaire - Step 2 of the assessment: the 50-question scored survey,
+ * shown after a user is classified as high-risk in GateForm.
+ *
+ * Fetches question definitions from the backend (GET /api/questionnaire/
+ * questions), gives a page per section, and posts
+ * answers to /api/questionnaire/submit for scoring. On success, shows the
+ * score with a bar chart and hands the full result to ChatInterface (Step
+ * 3) so the RAG chat can ground its answers in the user's actual answers.
+ * Includes a demo autofill button for quick end-to-end testing.
+ */
+
 import { useState, useEffect } from 'react'
 import ChatInterface from './ChatInterface.jsx'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'

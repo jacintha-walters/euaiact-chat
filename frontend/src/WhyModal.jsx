@@ -1,3 +1,8 @@
+/**
+ * WhyModal - content for the "Why is this made?" info panel.
+ */
+
+
 function WhyModal() {
   return (
     <div>

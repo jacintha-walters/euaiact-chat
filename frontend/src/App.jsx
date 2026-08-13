@@ -1,3 +1,15 @@
+/**
+ * EU AI Act Compliance Checker - Frontend entry point.
+ *
+ * Renders the persistent top bar (Why/Who info modals) and switches
+ * between the landing page and the gate/questionnaire/chat flow based
+ * on whether the user has started the assessment.
+ *
+ * Flow: LandingPage -> GateForm (risk classification) -> Questionnaire
+ * (scoring, only shown for high-risk) -> ChatInterface (RAG chat,
+ * rendered inside Questionnaire once a score exists).
+ */
+
 import { useState } from 'react'
 import LandingPage from './LandingPage.jsx'
 import GateForm from './GateForm.jsx'

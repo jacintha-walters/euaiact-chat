@@ -1,6 +1,6 @@
 """
 Retrieval logic for the AI Act RAG pipeline. Loads the pre-computed article
-embeddings once when the backend starts, and exposes a function to find the
+embeddings (embeddings.pkl) once when the backend starts, and exposes a function to find the
 most relevant articles for a given question.
 """
 
@@ -9,11 +9,10 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 
 MODEL_NAME = "all-MiniLM-L6-v2"  # must match the model used in build_embeddings.py
-EMBEDDINGS_PATH = "ai_act_data/embeddings.pkl"
+EMBEDDINGS_PATH = "ai_act_data/embeddings.pkl" # path to pickle file
 
 # Loaded once, at import time -- not on every request. Loading the model and
-# the embeddings file are both slow-ish operations (hundreds of ms), so doing
-# this once when the server starts keeps individual chat requests fast.
+# the embeddings file are both slow-ish operations (hundreds of ms)
 print("Loading embedding model and AI Act embeddings...")
 _model = SentenceTransformer(MODEL_NAME)
 
@@ -22,16 +21,14 @@ with open(EMBEDDINGS_PATH, "rb") as f:
 
 print(f"Retrieval ready: {len(_articles)} articles loaded.")
 
-
+# How similar two vectors are, from -1 (opposite) to 1 (identical)
+# For sentence embeddings, values are typically 0 to 1 in practice.
 def cosine_similarity(a: np.ndarray, b: np.ndarray) -> float:
-    """How similar two vectors are, from -1 (opposite) to 1 (identical).
-    For sentence embeddings, values are typically 0 to 1 in practice."""
     return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))
 
-
+# Given a user's question, return the top_k most relevant AI Act
+# articles, ranked by similarity.
 def find_relevant_articles(question: str, top_k: int = 3) -> list[dict]:
-    """Given a user's question, return the top_k most relevant AI Act
-    articles, ranked by similarity."""
     query_embedding = _model.encode(question)
 
     scored = []

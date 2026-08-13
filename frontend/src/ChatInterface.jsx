@@ -1,3 +1,15 @@
+/**
+ * ChatInterface - the RAG-grounded chat UI shown after a user completes the
+ * high-risk questionnaire.
+ *
+ * Receives the user's ScoreResult (overall score, section breakdown, and
+ * every answered question) as a prop from Questionnaire.jsx, and sends it
+ * with every /api/chat request so the backend/LLM can ground its answers
+ * in the user's actual results. Opens automatically with a score-based
+ * intro message, then auto-triggers a per-section weakness summary before
+ * the user can type anything themselves.
+ */
+
 import { useState, useRef, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
 

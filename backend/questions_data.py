@@ -1,7 +1,7 @@
 """
 Questionnaire questions - trimmed to 50 selected questions across three
-sections, renumbered sequentially (Q1-Q50). Replaces the earlier 54-question
-version built from the full original question set.
+sections, renumbered sequentially (Q1-Q50). Questions based on the original
+questionnaire from the published article in 2023, 'Complying with the EU AI Act'
 
 Question types:
 - "likert": single choice from a 5-point agree/disagree scale

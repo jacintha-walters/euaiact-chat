@@ -14,7 +14,11 @@ import pickle
 from sentence_transformers import SentenceTransformer
 from ai_act_data.articles import ARTICLES
 
-MODEL_NAME = "all-MiniLM-L6-v2"  # small, fast, good default for short legal text
+# small BERT model is chosen for embeddings. 6 layers.
+# lightweight so it can run locally
+MODEL_NAME = "all-MiniLM-L6-v2"  
+# pickle is used to save the embedding (numpy object)
+# this way the embedding only has to be done once
 OUTPUT_PATH = "ai_act_data/embeddings.pkl"
 
 

@@ -1,13 +1,27 @@
 """
-EU AI Act Compliance Checker - Backend API skeleton.
+EU AI Act Compliance Checker - Backend API.
+
+Handles risk-tier classification, a 50-question scored compliance
+questionnaire, and a RAG-grounded chat endpoint that lets users discuss
+their results with an LLM, grounded in the actual text of the EU AI Act.
+
+Architecture:
+    Gate (risk classification) -> Questionnaire (scoring) -> Chat (RAG)
+    Chat retrieval is handled by retrieval.py, which loads pre-computed
+    article embeddings (see build_embeddings.py) and uses similarity
+    to find the most relevant articles for each user question before
+    passing them to the LLM (Google Gemini) as grounding context.
 
 Run locally:
     pip install -r requirements.txt
+    cp .env.example .env   # then add your GOOGLE_API_KEY and GEMINI_MODEL
     uvicorn main:app --reload --port 8000
 
-Then visit http://localhost:8000/docs for the interactive API docs.
+Interactive API docs (Swagger UI): http://localhost:8000/docs
+Live deployment: https://euaiact-chat.vercel.app/
 """
 
+# load API key into environment
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -26,16 +40,15 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
 app = FastAPI(title="EU AI Act Compliance Checker API")
+# IP-addresses are used to track the amount of requests per user and raise an error if the limit is exceeded.
 limiter = Limiter(key_func=get_remote_address)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-# Allow the local React dev server (and later, your deployed frontend URL)
-# to call this API. Add your production frontend URL here once deployed.
+# Allow the React environment to communicate with this backend
 ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # Vite dev server default
-    "http://localhost:3000",
-    "https://euaiact-chat.vercel.app",  # <-- add once deployed
+    "http://localhost:5173", # vite standard port 
+    "https://euaiact-chat.vercel.app",  # deployed link
 ]
 
 app.add_middleware(
@@ -46,19 +59,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
+# is the server alive?
 class HealthResponse(BaseModel):
     status: str
     message: str
 
-# Determines the AI classification
+# determines the AI classification
 class GateAnswers(BaseModel):
     prohibited_practice: bool
     is_gpai_model: bool
     annex_iii_domain: bool
     transparency_trigger: bool
 
-# Communicates the classification
+# communicates the classification
 class GateResult(BaseModel):
     tier: str
     explanation: str
@@ -72,7 +85,7 @@ def root():
 def health():
     return HealthResponse(status="ok", message="Backend is alive")
 
-
+# defines 5 levels of risk: prohibited, GPAI, Annex III, transparency or minimal risk.
 @app.post("/api/gate", response_model=GateResult)
 def classify_tier(answers: GateAnswers):
     if answers.prohibited_practice:
@@ -107,18 +120,20 @@ def classify_tier(answers: GateAnswers):
 class QuestionnaireAnswers(BaseModel):
     answers: Dict[str, Union[str, List[str]]] # either one answer or a list for multi-select
 
-
+# scored percentage per section of the questionnaire
 class SectionScore(BaseModel):
     section: str
     score_percent: float
 
+# one answered question's full detail -- used to ground the chat's
+# advice in the user's actual answers.
 class AnsweredQuestion(BaseModel):
     text: str
     section: str
     answer_given: str
     score_percent: float
 
-
+# full result, overall score, score per section and answers to each question
 class ScoreResult(BaseModel):
     overall_percent: float
     sections: list[SectionScore]
@@ -129,11 +144,8 @@ class ScoreResult(BaseModel):
 def get_questions():
     return QUESTIONS
 
-
+# scoring logic for the questionnaire
 def get_points_for_answer(question: dict, raw_answer) -> float:
-    if question["type"] == "informational":
-        return 0.0
-
     if question["type"] == "multi_select":
         if not isinstance(raw_answer, list):
             raise ValueError(f"Question {question['id']} expects a list of selected options")
@@ -145,7 +157,7 @@ def get_points_for_answer(question: dict, raw_answer) -> float:
             return option["points"]
     raise ValueError(f"'{raw_answer}' is not a valid option for question {question['id']}")
 
-
+# turn the questionnaire answers into the a result + answers object
 @app.post("/api/questionnaire/submit", response_model=ScoreResult)
 def submit_questionnaire(payload: QuestionnaireAnswers):
     section_totals: dict[str, list[tuple[float, float]]] = {}
@@ -186,24 +198,26 @@ def submit_questionnaire(payload: QuestionnaireAnswers):
 
     return ScoreResult(overall_percent=overall, sections=section_scores, all_questions=all_questions)
 
+# chat messages are capped at 4000, used to track history
 class ChatMessage(BaseModel):
-    role: str
+    role: str # user or AI
     content: str = Field(..., max_length=4000)
 
-
+# user messages are capped at 2000
 class ChatRequest(BaseModel):
     question: str = Field(..., max_length=2000)
     score_result: ScoreResult
     conversation_history: list[ChatMessage] = Field(default=[], max_length=20)
 
-
 class ChatResponse(BaseModel):
     answer: str
     sources: list[dict]
 
+# connects to Google API Gemini LLM
 client = genai.Client(api_key=os.environ["GOOGLE_API_KEY"])  # reads .env
 GEMINI_MODEL = os.environ["GEMINI_MODEL"]
 
+# build the prompt that is asked to the AI after the questionnaire
 def build_system_prompt(score_result: ScoreResult, retrieved_articles: list[dict]) -> str:
     section_summary = "\n".join(
         f"- {s.section}: {s.score_percent}%" for s in score_result.sections
@@ -242,7 +256,7 @@ when making legal claims, and give concrete, actionable advice. If the
 provided article text doesn't cover what they're asking, say so honestly
 rather than guessing."""
 
-
+# chats are limited to 10 per minute
 @app.post("/api/chat", response_model=ChatResponse)
 @limiter.limit("10/minute")
 def chat(request: Request, payload: ChatRequest):
@@ -252,9 +266,8 @@ def chat(request: Request, payload: ChatRequest):
     messages = [{"role": m.role, "content": m.content} for m in payload.conversation_history]
     messages.append({"role": "user", "content": payload.question})
 
-    # Gemini expects roles as "user"/"model" (not "assistant"), and history +
-    # the new question combined into one `contents` list, rather than a
-    # separate `system` field for everything except the system instruction.
+    # Gemini expects roles as "user"/"model", and history +
+    # the new question combined into one `contents` list
     gemini_history = []
     for m in payload.conversation_history:
         role = "model" if m.role == "assistant" else "user"

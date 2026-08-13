@@ -1,3 +1,12 @@
+/**
+ * LandingPage - the app's entry screen, shown before the user starts the
+ * assessment flow.
+ *
+ * Explains what the tool is, links to the original 2023 research paper it's
+ * based on, and introduces the 3-step flow (risk classification ->
+ * questionnaire -> RAG chat) before handing off to GateForm via onStart.
+ */
+
 function LandingPage({ onStart }) {
   return (
     <div>
