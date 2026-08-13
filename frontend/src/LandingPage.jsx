@@ -18,8 +18,8 @@ function LandingPage({ onStart }) {
 
       <p style={{ fontSize: '0.9rem', color: '#555', backgroundColor: '#f5f5f5', padding: '0.8rem', borderRadius: '4px' }}>
         <strong>Note:</strong> we don't store your answers or conversations — 
-        they're processed in memory only and passed to the AI provider under their 
-        standard API terms. Please refrain from sharing confidential information.
+        they're processed in memory only and passed to the AI provider, your data is not used to train the model. 
+        Please refrain from sharing confidential information.
       </p>
 
       <p>
