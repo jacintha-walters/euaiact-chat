@@ -1,0 +1,6 @@
+<svg viewBox="-52 -52 104 104" xmlns="http://www.w3.org/2000/svg">
+  <g transform="rotate(-10)">
+    <circle r="50" fill="#185FA5"/>
+    <path d="M-16,2 L-5,14 L20,-16" fill="none" stroke="white" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

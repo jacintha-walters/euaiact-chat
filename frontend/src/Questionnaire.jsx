@@ -128,22 +128,34 @@ function Questionnaire() {
 
   if (result) {
     return (
-      <div>
-        <h2>Your compliance score: {result.overall_percent}%</h2>
-        <div className="mt-6 h-[300px] w-full">
-          <ResponsiveContainer>
-            <BarChart data={result.sections.map((s) => ({ ...s, shortName: shortenSection(s.section) }))}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="shortName" />
-              <YAxis domain={[0, 100]} unit="%" />
-              <Tooltip
-                formatter={(value) => [`${value}%`, 'Score']}
-                labelFormatter={(label, payload) => payload[0]?.payload.section || label}
-              />
-              <Bar dataKey="score_percent" fill="#1976d2" />
-            </BarChart>
-          </ResponsiveContainer>
+      <div className="grid md:grid-cols-[1fr_1.5fr] gap-15 xl:gap-30">
+        <div className="flex flex-col gap-8">
+          <h2 className="text-xl font-bold">Your Compliance Score</h2>
+
+          <div className="h-[220px] w-full">
+            <ResponsiveContainer>
+              <BarChart data={result.sections.map((s) => ({ ...s, shortName: shortenSection(s.section) }))}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="shortName" fontSize={12} />
+                <YAxis domain={[0, 100]} unit="%" fontSize={12} />
+                <Tooltip
+                  formatter={(value) => [`${value}%`, 'Score']}
+                  labelFormatter={(label, payload) => payload[0]?.payload.section || label}
+                />
+                <Bar dataKey="score_percent" fill="var(--primary)" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          <p className="text-muted-foreground">
+            You scored <strong className="text-foreground">{result.overall_percent}%</strong> overall.
+            This chatbot is grounded in the actual text of the EU AI Act, and it already
+            knows how you answered every question — so you can ask it about specific gaps
+            and it'll point you to exactly what needs to improve, with the right articles
+            cited.
+          </p>
         </div>
+
         <ChatInterface scoreResult={result} />
       </div>
     )
@@ -167,7 +179,7 @@ function Questionnaire() {
       </div>
 
       {currentSection.questions.map((q) => (
-        <div key={q.id} className="mb-6">
+        <div key={q.id} className="mb-6 flex flex-col gap-4 p-4 md:p-6 rounded-2xl bg-gray-100">
           <p>{q.text}</p>
 
           {q.type === 'multi_select' ? (
@@ -188,36 +200,44 @@ function Questionnaire() {
         ) : q.type === 'likert' ? (
             <div className="mt-2 flex items-center gap-2">
               <span className="w-[90px] text-xs text-muted-foreground">Strongly disagree</span>
-              {[...q.options].reverse().map((opt) => (
-                <button
-                  key={opt.label}
-                  onClick={() => handleSingleAnswer(q.id, opt.label)}
-                  title={opt.label}
-                  className={cn(
-                    'box-border h-10 min-w-0 flex-1 cursor-pointer border border-border p-0 leading-10',
-                    answers[q.id] === opt.label ? 'bg-blue-600 text-white' : 'bg-muted text-foreground'
-                  )}
-                >
-                  {opt.label === 'Neutral' ? '—' : ''}
-                </button>
-              ))}
+              <div className="flex flex-1 overflow-hidden rounded-full border border-border">
+                {[...q.options].reverse().map((opt, i, arr) => (
+                  <button
+                    key={opt.label}
+                    onClick={() => handleSingleAnswer(q.id, opt.label)}
+                    title={opt.label}
+                    className={cn(
+                      'h-10 min-w-0 flex-1 cursor-pointer border-r border-border p-0 leading-10 last:border-r-0',
+                      answers[q.id] === opt.label
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted text-foreground hover:bg-muted/70'
+                    )}
+                  >
+                    {opt.label === 'Neutral' ? '—' : ''}
+                  </button>
+                ))}
+              </div>
               <span className="w-[90px] text-right text-xs text-muted-foreground">
                 Strongly agree
               </span>
             </div>
           ) : (
-            q.options.map((opt) => (
-              <button
-                key={opt.label}
-                onClick={() => handleSingleAnswer(q.id, opt.label)}
-                className={cn(
-                  'mb-1.5 block cursor-pointer border border-border px-4 py-2 text-left',
-                  answers[q.id] === opt.label ? 'bg-blue-600 text-white' : 'bg-muted text-foreground'
-                )}
-              >
-                {opt.label}
-              </button>
-            ))
+            <div className="flex flex-wrap gap-2">
+              {q.options.map((opt) => (
+                 <button
+                  key={opt.label}
+                  onClick={() => handleSingleAnswer(q.id, opt.label)}
+                  className={cn(
+                    'cursor-pointer rounded-full border border-border px-5 py-1.5 text-sm',
+                    answers[q.id] === opt.label
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-white/50 text-foreground'
+                  )}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
           )}
         </div>
       ))}

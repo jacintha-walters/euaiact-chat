@@ -36,12 +36,15 @@ function App() {
 
   return (
     <div className="mx-auto mb-16 max-w-300 px-[1.5rem]">
-      <div className="mb-8 mt-8 flex items-center justify-end gap-2 border-b pb-4 lg:mb-12">
+      <div className="mb-4 mt-4 flex items-center justify-end gap-2 border-b pb-3 lg:mb-6">
         <button
           className="mr-auto cursor-pointer"
           onClick={() => setView("landing")}
         >
-          <h1>EU AI Act Compliance Checker</h1>
+          <div className="flex items-center gap-2">
+            <img src="/logo.svg" alt="" className="h-7 w-7" />
+            <span className="text-lg font-semibold">Comply with AI</span>
+          </div>
         </button>
         <div className="hidden lg:flex">
           <Button
@@ -92,7 +95,6 @@ function App() {
         aria-hidden={!mobileMenuOpen}
       >
         <div className="mb-8 flex items-center justify-between">
-          {/* <span className="font-heading text-lg font-semibold">Menu</span> */}
           <Button
             variant="ghost"
             size="icon"
@@ -151,15 +153,15 @@ function App() {
             >
               ← Back to home
             </Button>
-            {/* HI JACINTA, PUT CONTENT HERE */}
             <div className="flex flex-col gap-8">
               <div className="question-and-answer opacity-60 flex flex-col gap-2">
                 <h1 className="font-bold text-lg">
-                  Contextual to the business
+                  Grounded in the actual law
                 </h1>
                 <p>
-                  Here you may write about the cool things that your chatbot can
-                  do.
+                  No guessing, no generic advice. Every answer is checked against
+                  the real text of the EU AI Act — with the specific articles it's based on shown right
+                  alongside the answer.
                 </p>
               </div>
               <div className="question-and-answer opacity-60 flex flex-col gap-2">

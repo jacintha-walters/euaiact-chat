@@ -13,7 +13,7 @@ function Modal({ title, onClose, children }) {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="max-h-[80vh] w-[90%] max-w-[520px] overflow-y-auto rounded-lg bg-background p-6"
+        className="max-h-[80vh] w-[90%] max-w-[680px] overflow-y-auto rounded-lg bg-background p-6"
       >
         <div className="mb-4 flex items-center justify-between">
           <h2 className="m-0">{title}</h2>

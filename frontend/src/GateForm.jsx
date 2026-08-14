@@ -129,12 +129,14 @@ function GateForm() {
     setAnswers(demoAnswers);
   };
 
-  if (result && result.tier === "prohibited") {
+ if (result && result.tier === "prohibited") {
     return (
       <div>
-        <h2>This system is prohibited under the EU AI Act</h2>
+        <h2 className="text-xl font-bold text-center">
+          This system is prohibited under the EU AI Act
+        </h2>
 
-        <p>
+        <p className="mt-6">
           Based on your answer, your AI system falls under one of the practices
           banned outright by <strong>Article 5</strong> of the Act. Unlike the
           other risk categories, there is no compliance pathway here —
@@ -142,7 +144,7 @@ function GateForm() {
           into service in the EU, regardless of any other safeguards.
         </p>
 
-        <p>
+        <p className="mt-4">
           These include subliminal manipulation, exploiting vulnerabilities
           based on age, disability, or economic situation, social scoring,
           real-time public facial recognition for law enforcement, emotion
@@ -152,12 +154,12 @@ function GateForm() {
           attributes like race or political opinion.
         </p>
 
-        <p className="italic text-muted-foreground">
+        <p className="italic text-muted-foreground mt-4">
           Perhaps you made a mistake answering the previous question? You can go
           back and double check.
         </p>
 
-        <Button variant="outline" onClick={() => setResult(null)}>
+        <Button variant="outline" onClick={() => setResult(null)} className="mt-6">
           Go back to the risk questions
         </Button>
       </div>
@@ -167,9 +169,11 @@ function GateForm() {
   if (result && result.tier === "gpai") {
     return (
       <div>
-        <h2>This is a general-purpose AI model</h2>
+        <h2 className="text-xl font-bold text-center">
+          This is a general-purpose AI model
+        </h2>
 
-        <p>
+        <p className="mt-6">
           Based on your answer, your system is a general-purpose AI (GPAI) model
           — one designed to perform a wide range of tasks and typically provided
           to other businesses to build on, rather than built for one specific
@@ -177,7 +181,7 @@ function GateForm() {
           high-risk system requirements this tool currently covers.
         </p>
 
-        <p>
+        <p className="mt-4">
           <strong>Article 53</strong> sets out the core obligations for GPAI
           providers — maintaining technical documentation, providing information
           to downstream providers who integrate the model, and complying with EU
@@ -188,7 +192,7 @@ function GateForm() {
           obligations have applied since August 2025.
         </p>
 
-        <p className="italic text-muted-foreground">
+        <p className="italic text-muted-foreground mt-4">
           Perhaps your system isn't actually a general-purpose model? If it's
           built for one specific use case rather than a broad range of tasks,
           you can go back and reconsider that question.
@@ -200,6 +204,7 @@ function GateForm() {
             setResult(null);
             setAnswers({});
           }}
+          className="mt-6"
         >
           Go back to the risk questions
         </Button>
@@ -207,14 +212,16 @@ function GateForm() {
     );
   }
 
-  if (result && result.tier === "high-risk") {
+ if (result && result.tier === "high-risk") {
     return (
       <div>
         {!showQuestionnaire && (
           <>
-            <h2>Your system is marked as high-risk</h2>
+            <h2 className="text-xl font-bold text-center">
+              Your system is marked as high-risk
+            </h2>
 
-            <p>
+            <p className="mt-6">
               It's important to know that it's not the AI model itself that
               makes it high-risk — it depends on where and how it's applied. A
               model used in an Annex III domain (like employment, credit
@@ -222,14 +229,14 @@ function GateForm() {
               elsewhere might not be.
             </p>
 
-            <p>
+            <p className="mt-4">
               Right now, the EU AI Act's high-risk obligations aren't fully in
               effect yet for existing systems — but now is the time to take
               action. Per <strong>December 2027</strong>, you'll need to be
               compliant.
             </p>
 
-            <p>
+            <p className="mt-4">
               The following questionnaire contains <strong>50 questions</strong>{" "}
               spread across three sections — Data, Documentation &
               Communication; Model Risk; and Development Lifecycle. It's based
@@ -239,13 +246,13 @@ function GateForm() {
               take around 10 minutes to complete.
             </p>
 
-            <p>
+            <p className="mt-4">
               Afterward, you'll get an overview of your current compliance
               score, and the option to talk with a specialized chatbot about
               your score and how your organization could improve.
             </p>
 
-            <Button onClick={() => setShowQuestionnaire(true)}>
+            <Button onClick={() => setShowQuestionnaire(true)} className="mt-6">
               Continue to the full compliance questionnaire
             </Button>
           </>
@@ -258,21 +265,23 @@ function GateForm() {
   if (result && result.tier === "limited-risk") {
     return (
       <div>
-        <h2>Your system is marked as low-risk</h2>
+        <h2 className="text-xl font-bold text-center">
+          Your system is marked as low-risk
+        </h2>
 
-        <p>
+        <p className="mt-6">
           Good news — under the EU AI Act, this means there's only one main rule
           your organization needs to follow: <strong>transparency</strong>{" "}
           (Article 50).
         </p>
 
-        <p>
+        <p className="mt-4">
           Unlike the high-risk track, this obligation is already in effect — it
           applies since <strong>August 2, 2026</strong>. Depending on what your
           system does, it means:
         </p>
 
-        <ul>
+        <ul className="mt-4 space-y-2 list-disc pl-5">
           <li>
             If your system talks directly with people (a chatbot, voice
             assistant, etc.), you must make it clear they're interacting with an
@@ -294,7 +303,7 @@ function GateForm() {
           </li>
         </ul>
 
-        <p>
+        <p className="mt-4">
           This information needs to be given clearly, distinguishably, and no
           later than someone's first interaction with — or exposure to — the
           system.
@@ -306,6 +315,7 @@ function GateForm() {
             setResult(null);
             setAnswers({});
           }}
+          className="mt-6"
         >
           Go back to the risk questions
         </Button>
@@ -313,12 +323,14 @@ function GateForm() {
     );
   }
 
-  if (result && result.tier === "minimal-risk") {
+ if (result && result.tier === "minimal-risk") {
     return (
       <div>
-        <h2>Your system is marked as minimal-risk</h2>
+        <h2 className="text-xl font-bold text-center">
+          Your system is marked as minimal-risk
+        </h2>
 
-        <p>
+        <p className="mt-6">
           Based on your answers, your AI system doesn't currently fall under any
           of the Act's specific obligation tiers — it's not prohibited, not a
           general-purpose model, not used in a high-risk domain, and doesn't
@@ -326,7 +338,7 @@ function GateForm() {
           synthetic content.
         </p>
 
-        <p>
+        <p className="mt-4">
           This covers the majority of everyday AI use cases — things like spam
           filters, recommendation systems, or internal tooling that doesn't
           interact directly with the public or make high-stakes decisions about
@@ -334,7 +346,7 @@ function GateForm() {
           impose specific legal obligations.
         </p>
 
-        <p className="italic text-muted-foreground">
+        <p className="italic text-muted-foreground mt-4">
           Worth keeping in mind: if your system's use case changes over time —
           say, it starts being used in an Annex III domain, or begins
           interacting directly with users — its risk classification could change
@@ -348,6 +360,7 @@ function GateForm() {
             setResult(null);
             setAnswers({});
           }}
+          className="mt-6"
         >
           Go back to the risk questions
         </Button>
@@ -357,28 +370,25 @@ function GateForm() {
 
   return (
     <div>
-      <h1>EU AI Act Compliance Checker</h1>
-      <p className="italic text-muted-foreground">
+      <h1 className="text-xl font-bold text-center">
+        Full Compliance Assessment
+      </h1>
+      <p className="italic text-muted-foreground text-center mt-1">
         This is a self-assessment tool, not legal advice.
       </p>
 
-      <p>
+      <p className="text-center mt-4 mb-8">
         The EU AI Act works on a risk-based approach. This means that, instead
         of regulating the technology itself, the regulations focus on the impact
         the AI has on the user. Take a recommender system for example, if used
-        in an online webshop, this is considered low-risk. However, if we apply
-        the same recommender technology in a recruitment system, it becomes
+        in an online webshop, this is considered low-risk. However, apply
+        the same recommender system in a recruitment system, it becomes
         high-risk. Answer the questions below to determine your risk level.
       </p>
-      <div className="my-6 text-left">
-        <Button variant="outline" onClick={handleDemoFill}>
-          I want a demo
-        </Button>
-      </div>
       {QUESTIONS.map((q) => (
         <div
           key={q.key}
-          className="mb-6 flex flex-col gap-6 p-6 md:p-12 rounded-2xl bg-gray-100"
+          className="mb-6 flex flex-col gap-4 p-4 md:p-6 rounded-2xl bg-gray-100"
         >
           <div className="max-w-[80ch]">
             <p className="inline">{q.text}</p>
@@ -421,9 +431,14 @@ function GateForm() {
           </div>
         </div>
       ))}
-      <Button onClick={handleSubmit} disabled={!allAnswered || loading}>
-        {loading ? "Checking..." : "See my result"}
-      </Button>
+      <div className="flex gap-3">
+        <Button onClick={handleSubmit} disabled={!allAnswered || loading}>
+          {loading ? "Checking..." : "See my result"}
+        </Button>
+        <Button variant="outline" onClick={handleDemoFill}>
+          I want a demo
+        </Button>
+      </div>
     </div>
   );
 }

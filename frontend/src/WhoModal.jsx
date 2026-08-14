@@ -74,6 +74,27 @@ function WhoModal() {
           </div>
         </div>
       </div>
+
+           <div className="section flex flex-col gap-4">
+        <h3 className="mb-1 border-b border-border pb-2">Education</h3>
+        <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-1">
+            <p className="mb-0.5">
+              <strong>MSc Applied Artificial Intelligence</strong> — Amsterdam
+              University of Applied Sciences
+            </p>
+            <p className="mt-0 text-muted-foreground">Cum laude</p>
+          </div>
+          <div className="flex flex-col gap-1">
+            <p className="mb-0.5">
+              <strong>BSc Cyber Security</strong> — Amsterdam University of
+              Applied Sciences
+            </p>
+            <p className="mt-0 text-muted-foreground">Cum laude</p>
+          </div>
+        </div>
+      </div>
+
       <div className="section flex flex-col gap-4">
         <h3 className="mb-1 border-b border-border pb-2">Experience</h3>
         <div className="flex flex-col gap-8">
@@ -191,26 +212,6 @@ function WhoModal() {
                 market research.
               </li>
             </ul>
-          </div>
-        </div>
-      </div>
-
-      <div className="section flex flex-col gap-4">
-        <h3 className="mb-1 border-b border-border pb-2">Education</h3>
-        <div className="flex flex-col gap-8">
-          <div className="flex flex-col gap-1">
-            <p className="mb-0.5">
-              <strong>MSc Applied Artificial Intelligence</strong> — Amsterdam
-              University of Applied Sciences
-            </p>
-            <p className="mt-0 text-muted-foreground">Cum laude</p>
-          </div>
-          <div className="flex flex-col gap-1">
-            <p className="mb-0.5">
-              <strong>BSc Cyber Security</strong> — Amsterdam University of
-              Applied Sciences
-            </p>
-            <p className="mt-0 text-muted-foreground">Cum laude</p>
           </div>
         </div>
       </div>

@@ -14,36 +14,36 @@ import {
 
 function LandingPage({ onStartAssessment, onStartChat }) {
   return (
-    <div className="flex flex-col gap-8">
-      <div className="max-lg:-order-1 flex flex-col gap-4">
-        <div className="grid md:grid-cols-2 gap-2">
-          <FullComplianceAssessmentButton onClick={onStartAssessment} />
-          <AskQuestionButton onClick={onStartChat} />
-        </div>
-      </div>
-      <p className="mt-6 text-xl mx-auto text-center font-bold">
-        Built to aid businesses in understanding their role with the EU AI Act
-      </p>
-      <div className="flex bg-white mx-auto p-8 lg:p-12 flex-col gap-8 rounded-xl border border-black/10">
-        <div className="flex flex-col gap-4">
-          <p className="">
-            The EU AI Act (Regulation (EU) 2024/1689) is currently in force. It
-            entered into force in August 2024, and the majority of its
-            obligations became applicable from August 2026. It applies to any
-            organization that develops, deploys, or uses AI systems affecting
-            people in the EU, regardless of where the organization is based.
-          </p>
-
-          <p className="">
-            This tool is built for organizations trying to understand where
-            their AI systems stand under the Act — whether you're a small
-            business unsure if the rules apply to you, or a compliance team
-            looking to identify concrete gaps in an existing high-risk system.
-          </p>
-        </div>
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1 text-center">
+        <p className="text-xl font-bold">
+          Know where you stand under the EU AI Act.
+        </p>
         <p className="italic opacity-60">
           This is a self-assessment tool, not legal advice.
         </p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-2">
+        <FullComplianceAssessmentButton onClick={onStartAssessment} />
+        <AskQuestionButton onClick={onStartChat} />
+      </div>
+
+      <div className="flex bg-white mx-auto p-8 lg:p-12 flex-col gap-8 rounded-xl border border-black/10">
+        <div className="flex flex-col gap-4">
+          <p className="">
+            We get it — regulation like this can feel overwhelming, especially when you're not sure it even applies to you. 
+            The EU AI Act (Regulation (EU) 2024/1689) has been in force since August 2024, with most of its obligations now 
+            active since August 2026, and it reaches any organization whose AI systems affect people in the EU, 
+            no matter where you're based.
+          </p>
+
+          <p className="">
+            That's exactly why this tool exists. Whether you're a small business wondering 
+            if the rules touch you at all, or a compliance team hunting for concrete gaps in 
+            an existing high-risk system, we'll help you find a clear answer — not just more paperwork.
+          </p>
+        </div>
 
         <p className="opacity-60">
           <strong>Note:</strong> information you enter is not saved anywhere.
