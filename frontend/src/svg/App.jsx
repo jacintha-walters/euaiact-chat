@@ -142,7 +142,7 @@ function App() {
       {view === "assessment" && <GateForm />}
 
       {view === "chat" && (
-        <div className="grid md:grid-cols-[1fr_1.5fr] gap-5 md:gap-15 xl:gap-30">
+        <div className="grid md:grid-cols-[1fr_1.5fr] gap-15 xl:gap-30">
           <div className="text-black flex flex-col gap-8  order-2 md:-order-1">
             <Button
               variant="outline"
@@ -175,7 +175,7 @@ function App() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-4">
             <Button
               variant="outline"
               className="h-fit w-fit block md:hidden"

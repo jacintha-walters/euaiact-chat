@@ -123,7 +123,7 @@ function ChatInterface({ scoreResult }) {
   };
 
   return (
-    <Card className="flex flex-col h-[70vh] lg:h-[70vh] min-h-[40rem] max-w-[80ch] overflow-hidden p-4 rounded-3xl shadow-lg">
+    <Card className="flex flex-col h-[70vh] lg:h-[70vh] min-h-[40rem] max-w-[80ch] overflow-hidden p-4 rounded-3xl border border-primary shadow-lg">
       <ScrollArea
         viewportRef={scrollViewportRef}
         className="flex-1 min-h-0 px-4"
@@ -191,8 +191,8 @@ function ChatInterface({ scoreResult }) {
         </div>
       </ScrollArea>
 
-      <div className="p-3 pt-0 ">
-        <div className="flex items-center gap-2 justify-center rounded-xl lg:rounded-full border bg-muted/50 pl-6 p-2">
+      <div className="p-0 pt-0 ">
+        <div className="flex items-center gap-2 justify-center rounded-full lg:rounded-full border bg-muted/50 pl-6 p-2">
           <Textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
