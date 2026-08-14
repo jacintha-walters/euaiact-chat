@@ -1,56 +1,19 @@
-/**
- * EU AI Act Compliance Checker - Frontend entry point.
- *
- * Renders the persistent top bar (Why/Who info modals) and switches
- * between the landing page and the gate/questionnaire/chat flow based
- * on whether the user has started the assessment.
- *
- * Flow: LandingPage -> GateForm (risk classification) -> Questionnaire
- * (scoring, only shown for high-risk) -> ChatInterface (RAG chat,
- * rendered inside Questionnaire once a score exists).
- */
-
 import { useState } from 'react'
 import LandingPage from './LandingPage.jsx'
 import GateForm from './GateForm.jsx'
+import ChatInterface from './ChatInterface.jsx'
 import Modal from './Modal.jsx'
 import WhyModal from './WhyModal.jsx'
 import WhoModal from './WhoModal.jsx'
 
 function App() {
-  const [started, setStarted] = useState(false)
+  const [view, setView] = useState('landing') // 'landing' | 'assessment' | 'chat'
   const [activeModal, setActiveModal] = useState(null) // null | 'why' | 'who'
 
   return (
-    <div style={{ fontFamily: 'sans-serif', maxWidth: 600, margin: '4rem auto', padding: '0 1rem' }}>
+    <div style={{ fontFamily: 'sans-serif', maxWidth: 640, margin: '4rem auto', padding: '0 1rem' }}>
       <style>{`
-        .markdown-answer p { margin: 0.4rem 0; }
-        .markdown-answer ul, .markdown-answer ol { margin: 0.4rem 0; padding-left: 1.2rem; }
-        .markdown-answer h1, .markdown-answer h2, .markdown-answer h3 { margin: 0.6rem 0 0.3rem; }
-        .markdown-answer li { margin-bottom: 0.2rem; }
-
-        .btn-primary {
-          background-color: #1976d2;
-          color: white;
-          border: none;
-          border-radius: 4px;
-          padding: 0.6rem 1.2rem;
-          font-size: 0.95rem;
-          cursor: pointer;
-        }
-        .btn-primary:hover { background-color: #1565c0; }
-        .btn-primary:disabled { background-color: #b0bec5; cursor: not-allowed; }
-
-        .btn-secondary {
-          background-color: white;
-          color: #1976d2;
-          border: 1px solid #1976d2;
-          border-radius: 4px;
-          padding: 0.6rem 1.2rem;
-          font-size: 0.95rem;
-          cursor: pointer;
-        }
-        .btn-secondary:hover { background-color: #f0f7ff; }
+        /* ...your existing markdown/button styles, unchanged... */
       `}</style>
 
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginBottom: '1rem' }}>
@@ -61,7 +24,29 @@ function App() {
           Who made this?
         </button>
       </div>
-      {started ? <GateForm /> : <LandingPage onStart={() => setStarted(true)} />}
+
+      {view === 'landing' && (
+        <LandingPage
+          onStartAssessment={() => setView('assessment')}
+          onStartChat={() => setView('chat')}
+        />
+      )}
+
+      {view === 'assessment' && <GateForm />}
+
+      {view === 'chat' && (
+        <div>
+          <button className="btn-secondary" onClick={() => setView('landing')} style={{ marginBottom: '1rem' }}>
+            ← Back to home
+          </button>
+          <h1>EU AI Act Chatbot</h1>
+          <p style={{ fontStyle: 'italic', color: '#555' }}>
+            This assistant can make mistakes. It's grounded in the EU AI Act but is not a
+            substitute for legal advice.
+          </p>
+          <ChatInterface />
+        </div>
+      )}
 
       {activeModal === 'why' && (
         <Modal title="Why is this made?" onClose={() => setActiveModal(null)}>

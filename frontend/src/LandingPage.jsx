@@ -1,13 +1,13 @@
 /**
- * LandingPage - the app's entry screen, shown before the user starts the
- * assessment flow.
+ * LandingPage - the app's entry screen.
  *
- * Explains what the tool is, links to the original 2023 research paper it's
- * based on, and introduces the 3-step flow (risk classification ->
- * questionnaire -> RAG chat) before handing off to GateForm via onStart.
+ * Explains what the tool is, links to the original 2023 research paper,
+ * and offers two paths: a full 10-minute risk classification + scored
+ * assessment (onStartAssessment), or a quick, no-commitment question
+ * answered by the general-purpose chatbot (onStartChat).
  */
 
-function LandingPage({ onStart }) {
+function LandingPage({ onStartAssessment, onStartChat }) {
   return (
     <div>
       <h1>EU AI Act Compliance Checker</h1>
@@ -17,51 +17,50 @@ function LandingPage({ onStart }) {
       </p>
 
       <p style={{ fontSize: '0.9rem', color: '#555', backgroundColor: '#f5f5f5', padding: '0.8rem', borderRadius: '4px' }}>
-        <strong>Note:</strong> we don't store your answers or conversations — 
-        they're processed in memory only and passed to the AI provider, your data is not used to train the model. 
-        Please refrain from sharing confidential information.
+        <strong>Note:</strong> information you enter is not saved anywhere. Chats with the
+        chatbot remain within the API environment and are not used to train the AI, but
+        please refrain from sharing confidential information.
       </p>
 
       <p>
-        The EU AI Act is the world's first comprehensive legal framework 
-        for artificial intelligence. Its primary goal is to ensure that AI systems used in the 
-        European Union are safe, transparent, traceable and non-discriminatory. 
-        It entered into force in August 2024, and the majority of its obligations became applicable from August 2026. 
-        It applies to any organization that develops, deploys, or uses AI systems affecting people in the EU,
-        regardless of where the organization itself is based.
+        The EU AI Act (Regulation (EU) 2024/1689) is currently in force. It entered into
+        force in August 2024, and the majority of its obligations became applicable from
+        August 2026. It applies to any organization that develops, deploys, or uses AI
+        systems affecting people in the EU, regardless of where the organization is based.
       </p>
 
       <p>
         This tool is built for organizations trying to understand where their AI systems
         stand under the Act — whether you're a small business unsure if the rules apply to
-        you, or a compliance team looking to identify concrete gaps in an existing high-risk
-        system.
+        you, or a compliance team looking to identify concrete gaps in an existing
+        high-risk system.
       </p>
 
-      <p>Here's how it works:</p>
+      <p style={{ fontWeight: 600, marginTop: '1.5rem' }}>What would you like to do?</p>
 
-      <ol style={{ lineHeight: '1.8' }}>
-        <li><strong>Determine your risk level</strong> — a few quick questions identify which category your AI system falls into under the Act.
-        If the result is that your model is high-risk, you will continue with steps 2 and 3.</li>
-        <li><strong>Answer questions based on your risk level</strong> — to identify weaknesses and calculate a compliance score.</li>
-        <li><strong>Talk with an EU AI Act-focused assistant</strong> — grounded in the actual text of the Act, to answer your specific questions and discuss how to close the gaps.</li>
-      </ol>
+      <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexWrap: 'wrap' }}>
+        <div style={{ flex: '1 1 260px', border: '1px solid #ddd', borderRadius: '8px', padding: '1.2rem' }}>
+          <h3 style={{ marginTop: 0 }}>Full compliance assessment</h3>
+          <p style={{ fontSize: '0.9rem', color: '#555' }}>
+            Determine your risk tier, answer a 50-question scored assessment, and get a
+            detailed, grounded breakdown of where to improve. Takes about 10 minutes.
+          </p>
+          <button className="btn-primary" onClick={onStartAssessment}>
+            Start the assessment
+          </button>
+        </div>
 
-      <button
-        onClick={onStart}
-        style={{
-          backgroundColor: '#1976d2',
-          color: 'white',
-          border: 'none',
-          borderRadius: '4px',
-          padding: '0.7rem 1.4rem',
-          fontSize: '1rem',
-          cursor: 'pointer',
-          marginTop: '1rem',
-        }}
-      >
-        Go to Step 1
-      </button>
+        <div style={{ flex: '1 1 260px', border: '1px solid #ddd', borderRadius: '8px', padding: '1.2rem' }}>
+          <h3 style={{ marginTop: 0 }}>Just have a question?</h3>
+          <p style={{ fontSize: '0.9rem', color: '#555' }}>
+            Skip the assessment and ask the chatbot directly — grounded in the actual text
+            of the Act, no setup required.
+          </p>
+          <button className="btn-secondary" onClick={onStartChat}>
+            Ask a question
+          </button>
+        </div>
+      </div>
     </div>
   )
 }

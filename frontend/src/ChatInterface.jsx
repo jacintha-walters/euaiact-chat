@@ -1,13 +1,16 @@
 /**
- * ChatInterface - the RAG-grounded chat UI shown after a user completes the
- * high-risk questionnaire.
+ * ChatInterface - RAG-grounded chat UI, supporting two modes:
  *
- * Receives the user's ScoreResult (overall score, section breakdown, and
- * every answered question) as a prop from Questionnaire.jsx, and sends it
- * with every /api/chat request so the backend/LLM can ground its answers
- * in the user's actual results. Opens automatically with a score-based
- * intro message, then auto-triggers a per-section weakness summary before
- * the user can type anything themselves.
+ * 1. Scored mode (scoreResult prop provided): shown after a user completes
+ *    the high-risk questionnaire. Opens with a score-based intro, sends the
+ *    full score + every answered question with each request so the LLM can
+ *    ground advice in the user's actual results, and auto-triggers a
+ *    per-section weakness summary before the user types anything.
+ *
+ * 2. General Q&A mode (no scoreResult): used for the "I just have a
+ *    question" path with no completed assessment. Opens with a plain
+ *    welcome message, no auto-triggered summary, and score_result is
+ *    omitted from requests entirely.
  */
 
 import { useState, useRef, useEffect } from 'react'
@@ -26,7 +29,9 @@ not generic topic-level statements. Answer ONLY in this exact format, nothing el
 
 Repeat that block for all three sections. Keep every bullet short -- a phrase, not a sentence.`
 
-function getIntroMessage(overallPercent) {
+const GENERAL_INTRO_MESSAGE = "Hi! I can answer questions about the EU AI Act — ask me anything, like \"is my chatbot considered high-risk?\" or \"what does Article 10 require?\""
+
+function getScoredIntroMessage(overallPercent) {
   if (overallPercent >= 80) {
     return `You scored **${overallPercent}%** compliance — that's really good! Let's look at a few final improvements.`
   }
@@ -37,8 +42,13 @@ function getIntroMessage(overallPercent) {
 }
 
 function ChatInterface({ scoreResult }) {
+  const hasScore = scoreResult != null
+
   const [messages, setMessages] = useState(() => [
-    { role: 'assistant', content: getIntroMessage(scoreResult.overall_percent) },
+    {
+      role: 'assistant',
+      content: hasScore ? getScoredIntroMessage(scoreResult.overall_percent) : GENERAL_INTRO_MESSAGE,
+    },
   ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -49,14 +59,16 @@ function ChatInterface({ scoreResult }) {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
+  // Only auto-trigger the weakness summary in scored mode -- general Q&A
+  // mode just waits for the user's own first question.
   useEffect(() => {
-    if (!hasAutoSent.current) {
+    if (hasScore && !hasAutoSent.current) {
       hasAutoSent.current = true
       sendMessage(SUMMARY_PROMPT, SUMMARY_DISPLAY_TEXT)
     }
   }, [])
 
-const sendMessage = async (question, displayText = question) => {
+  const sendMessage = async (question, displayText = question) => {
     if (loading) return
 
     const userMessage = { role: 'user', content: displayText }
@@ -65,15 +77,19 @@ const sendMessage = async (question, displayText = question) => {
     setInput('')
     setLoading(true)
 
+    const requestBody = {
+      question,
+      conversation_history: historyBeforeThis,
+    }
+    if (hasScore) {
+      requestBody.score_result = scoreResult
+    }
+
     try {
       const response = await fetch(`${API_BASE_URL}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          question,
-          score_result: scoreResult,
-          conversation_history: historyBeforeThis,
-        }),
+        body: JSON.stringify(requestBody),
       })
 
       if (!response.ok) {
@@ -106,17 +122,12 @@ const sendMessage = async (question, displayText = question) => {
   }
 
   return (
-    <div style={{ marginTop: '2rem', border: '1px solid #ccc', borderRadius: '8px', display: 'flex', flexDirection: 'column', height: '500px' }}>
+    <div style={{ marginTop: '1.5rem', border: '1px solid #ccc', borderRadius: '8px', backgroundColor: 'white', display: 'flex', flexDirection: 'column', height: '500px' }}>
       <div style={{ padding: '0.75rem', borderBottom: '1px solid #eee', fontWeight: 'bold' }}>
-        Ask about your results
+        {hasScore ? 'Ask about your results' : 'Ask about the EU AI Act'}
       </div>
 
       <div style={{ flex: 1, overflowY: 'auto', padding: '1rem' }}>
-        {messages.length === 0 && (
-          <p style={{ color: '#888', fontStyle: 'italic' }}>
-            Ask a question about your score, like "how can I improve my data governance?"
-          </p>
-        )}
         {messages.map((msg, i) => (
           <div key={i} style={{ marginBottom: '1rem', textAlign: msg.role === 'user' ? 'right' : 'left' }}>
             <div
@@ -125,7 +136,7 @@ const sendMessage = async (question, displayText = question) => {
                 maxWidth: '80%',
                 padding: '0.6rem 0.9rem',
                 borderRadius: '10px',
-                backgroundColor: msg.role === 'user' ? '#1976d2' : '#f0f0f0',
+                backgroundColor: msg.role === 'user' ? 'var(--navy, #1976d2)' : '#f0f0f0',
                 color: msg.role === 'user' ? 'white' : 'black',
                 textAlign: 'left',
               }}
@@ -145,7 +156,7 @@ const sendMessage = async (question, displayText = question) => {
             )}
           </div>
         ))}
-        {loading && <p style={{ color: '#888' }}>Thinking... this can take up to 10 seconds.</p>}
+        {loading && <p style={{ color: '#888' }}>Thinking... this can take a few seconds.</p>}
         <div ref={bottomRef} />
       </div>
 
@@ -158,7 +169,7 @@ const sendMessage = async (question, displayText = question) => {
           rows={1}
           maxLength={2000}
           style={{ flex: 1, padding: '0.5rem', resize: 'none', border: '1px solid #ccc', borderRadius: '4px' }}
-        />         
+        />
         <span style={{ fontSize: '0.75rem', color: input.length > 1800 ? '#c62828' : '#999', marginLeft: '0.5rem', alignSelf: 'flex-end' }}>
           {input.length}/2000
         </span>

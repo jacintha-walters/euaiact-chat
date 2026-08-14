@@ -30,7 +30,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from questions_data import QUESTIONS
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Optional
 from google import genai
 from google.genai import types
 from retrieval import find_relevant_articles
@@ -207,7 +207,7 @@ class ChatMessage(BaseModel):
 # user messages are capped at 2000
 class ChatRequest(BaseModel):
     question: str = Field(..., max_length=2000)
-    score_result: ScoreResult
+    score_result: Optional[ScoreResult] = None
     conversation_history: list[ChatMessage] = Field(default=[], max_length=20)
 
 class ChatResponse(BaseModel):
@@ -218,20 +218,37 @@ class ChatResponse(BaseModel):
 client = genai.Client(api_key=os.environ["GOOGLE_API_KEY"])  # reads .env
 GEMINI_MODEL = os.environ["GEMINI_MODEL"]
 
-# build the prompt that is asked to the AI after the questionnaire
-def build_system_prompt(score_result: ScoreResult, retrieved_articles: list[dict]) -> str:
-    section_summary = "\n".join(
-        f"- {s.section}: {s.score_percent}%" for s in score_result.sections
-    )
-
-    all_answers_summary = "\n".join(
-        f"- [{q.section}] \"{q.text}\" -> answered \"{q.answer_given}\" (scored {q.score_percent}%)"
-        for q in score_result.all_questions
-    )
-
+# build the prompt either for the general chat or with the questionnaire data
+def build_system_prompt(score_result: Optional[ScoreResult], retrieved_articles: list[dict]) -> str:
     articles_text = "\n\n".join(
         f"### Article {a['article_number']}: {a['title']}\n{a['text']}"
         for a in retrieved_articles
+    )
+
+    if score_result is None:
+        # General Q&A mode -- no completed assessment, confident tone
+        return f"""You are a knowledgeable, confident assistant helping people
+understand the EU AI Act (Regulation (EU) 2024/1689).
+
+RELEVANT AI ACT TEXT:
+{articles_text}
+
+Answer the user's question directly and confidently. For most questions,
+2-3 short paragraphs is enough -- be complete within that space. If the
+question specifically asks you to list or enumerate multiple items, it's
+fine to use a short list -- keep each item to a brief phrase rather than a
+full sentence, but list all of them completely. Use the text above as your
+primary source, combined with your own knowledge of the Act. Cite article
+numbers when you reference specific provisions. This is general
+information, not legal advice."""
+
+    # Scored mode -- grounded in this user's actual questionnaire answers
+    section_summary = "\n".join(
+        f"- {s.section}: {s.score_percent}%" for s in score_result.sections
+    )
+    all_answers_summary = "\n".join(
+        f"- [{q.section}] \"{q.text}\" -> answered \"{q.answer_given}\" (scored {q.score_percent}%)"
+        for q in score_result.all_questions
     )
 
     return f"""You are an EU AI Act compliance consultant helping an organization
@@ -253,9 +270,7 @@ provided below):
 Answer the user's question as a knowledgeable, practical consultant would --
 base your assessment of their weaknesses on the actual answers listed above,
 not just section percentages. Cite specific articles from the text above
-when making legal claims, and give concrete, actionable advice. If the
-provided article text doesn't cover what they're asking, say so honestly
-rather than guessing."""
+when making legal claims, and give concrete, actionable advice."""
 
 # chats are limited to 10 per minute
 @app.post("/api/chat", response_model=ChatResponse)
