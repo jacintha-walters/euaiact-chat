@@ -15,8 +15,13 @@ import {
 function LandingPage({ onStartAssessment, onStartChat }) {
   return (
     <div className="flex flex-col gap-8">
-      {" "}
-      <p className="text-xl mx-auto text-center font-bold">
+      <div className="max-lg:-order-1 flex flex-col gap-4">
+        <div className="grid md:grid-cols-2 gap-2">
+          <FullComplianceAssessmentButton onClick={onStartAssessment} />
+          <AskQuestionButton onClick={onStartChat} />
+        </div>
+      </div>
+      <p className="mt-6 text-xl mx-auto text-center font-bold">
         Built to aid businesses in understanding their role with the EU AI Act
       </p>
       <div className="flex bg-white mx-auto p-8 lg:p-12 flex-col gap-8 rounded-xl border border-black/10">
@@ -46,12 +51,6 @@ function LandingPage({ onStartAssessment, onStartChat }) {
           used to train the AI, but please refrain from sharing confidential
           information.
         </p>
-      </div>
-      <div className="max-lg:-order-1 flex flex-col gap-4">
-        <div className="grid md:grid-cols-2 gap-2">
-          <FullComplianceAssessmentButton onClick={onStartAssessment} />
-          <AskQuestionButton onClick={onStartChat} />
-        </div>
       </div>
     </div>
   );
