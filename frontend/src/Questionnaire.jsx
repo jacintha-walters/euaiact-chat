@@ -13,6 +13,8 @@
 import { useState, useEffect } from 'react'
 import ChatInterface from './ChatInterface.jsx'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
@@ -128,7 +130,7 @@ function Questionnaire() {
     return (
       <div>
         <h2>Your compliance score: {result.overall_percent}%</h2>
-        <div style={{ width: '100%', height: 300, marginTop: '1.5rem' }}>
+        <div className="mt-6 h-[300px] w-full">
           <ResponsiveContainer>
             <BarChart data={result.sections.map((s) => ({ ...s, shortName: shortenSection(s.section) }))}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -153,61 +155,53 @@ function Questionnaire() {
 
   return (
     <div>
-      <div style={{ marginBottom: '1.5rem', textAlign: 'right' }}>
-        <button onClick={handleDemoFill} style={{ fontSize: '0.85rem', color: '#1976d2', background: 'none', border: '1px solid #1976d2', borderRadius: '4px', padding: '0.4rem 0.8rem', cursor: 'pointer' }}>
+      <div className="mb-6 text-right">
+        <Button variant="outline" size="sm" onClick={handleDemoFill}>
           Fill it in for me — I just want a demo
-        </button>
+        </Button>
       </div>
 
       {/* Page indicator */}
-      <div style={{ marginBottom: '1rem', color: '#555' }}>
+      <div className="mb-4 text-muted-foreground">
         Section {pageIndex + 1} of {sections.length}: <strong>{currentSection.name}</strong>
       </div>
 
       {currentSection.questions.map((q) => (
-        <div key={q.id} style={{ marginBottom: '1.5rem' }}>
+        <div key={q.id} className="mb-6">
           <p>{q.text}</p>
 
           {q.type === 'multi_select' ? (
             q.options.map((opt) => {
               const selected = (answers[q.id] || []).includes(opt.label)
               return (
-                <label key={opt.label} style={{ display: 'block', marginBottom: '0.3rem', cursor: 'pointer' }}>
+                <label key={opt.label} className="mb-1 block cursor-pointer">
                   <input
                     type="checkbox"
                     checked={selected}
                     onChange={() => handleMultiSelectToggle(q.id, opt.label)}
-                    style={{ marginRight: '0.5rem' }}
+                    className="mr-2"
                   />
                   {opt.label}
                 </label>
               )
             })
         ) : q.type === 'likert' ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem' }}>
-              <span style={{ fontSize: '0.8rem', color: '#555', width: '90px' }}>Strongly disagree</span>
+            <div className="mt-2 flex items-center gap-2">
+              <span className="w-[90px] text-xs text-muted-foreground">Strongly disagree</span>
               {[...q.options].reverse().map((opt) => (
                 <button
                   key={opt.label}
                   onClick={() => handleSingleAnswer(q.id, opt.label)}
                   title={opt.label}
-                  style={{
-                    flex: '1 1 0',
-                    minWidth: 0,
-                    boxSizing: 'border-box',
-                    height: '40px',
-                    lineHeight: '40px',
-                    padding: 0,
-                    backgroundColor: answers[q.id] === opt.label ? '#1976d2' : '#eee',
-                    color: answers[q.id] === opt.label ? 'white' : 'black',
-                    border: '1px solid #ccc',
-                    cursor: 'pointer',
-                  }}
+                  className={cn(
+                    'box-border h-10 min-w-0 flex-1 cursor-pointer border border-border p-0 leading-10',
+                    answers[q.id] === opt.label ? 'bg-blue-600 text-white' : 'bg-muted text-foreground'
+                  )}
                 >
                   {opt.label === 'Neutral' ? '—' : ''}
                 </button>
               ))}
-              <span style={{ fontSize: '0.8rem', color: '#555', width: '90px', textAlign: 'right' }}>
+              <span className="w-[90px] text-right text-xs text-muted-foreground">
                 Strongly agree
               </span>
             </div>
@@ -216,16 +210,10 @@ function Questionnaire() {
               <button
                 key={opt.label}
                 onClick={() => handleSingleAnswer(q.id, opt.label)}
-                style={{
-                  display: 'block',
-                  marginBottom: '0.4rem',
-                  backgroundColor: answers[q.id] === opt.label ? '#1976d2' : '#eee',
-                  color: answers[q.id] === opt.label ? 'white' : 'black',
-                  border: '1px solid #ccc',
-                  padding: '0.5rem 1rem',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                }}
+                className={cn(
+                  'mb-1.5 block cursor-pointer border border-border px-4 py-2 text-left',
+                  answers[q.id] === opt.label ? 'bg-blue-600 text-white' : 'bg-muted text-foreground'
+                )}
               >
                 {opt.label}
               </button>
@@ -234,21 +222,21 @@ function Questionnaire() {
         </div>
       ))}
 
-      <div style={{ marginTop: '2rem' }}>
+      <div className="mt-8">
         {pageIndex > 0 && (
-          <button className="btn-secondary" onClick={() => setPageIndex((p) => p - 1)} style={{ marginRight: '0.5rem' }}>
+          <Button variant="outline" className="mr-2" onClick={() => setPageIndex((p) => p - 1)}>
             Back
-          </button>
+          </Button>
         )}
         {!isLastPage && (
-          <button className="btn-primary" onClick={() => setPageIndex((p) => p + 1)} disabled={!currentSectionAnswered}>
+          <Button onClick={() => setPageIndex((p) => p + 1)} disabled={!currentSectionAnswered}>
             Next
-          </button>
+          </Button>
         )}
         {isLastPage && (
-          <button className="btn-primary" onClick={() => handleSubmit()} disabled={!allAnswered || loading}>
+          <Button onClick={() => handleSubmit()} disabled={!allAnswered || loading}>
             {loading ? 'Scoring...' : 'See my score'}
-          </button>
+          </Button>
         )}
       </div>
     </div>
