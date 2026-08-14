@@ -1,43 +1,45 @@
 """
-One-time script: embeds each AI Act article and saves the vectors to disk.
+One-time script: embeds each AI Act article using Google's hosted embeddings
+API and saves the vectors to disk.
 
-Run this manually whenever ai_act_data/articles.py changes (new articles
-added, existing text edited):
-
+Run manually whenever ai_act_data/articles.py changes:
     python build_embeddings.py
 
-It does NOT run automatically when the server starts -- embedding is a
-build step, not a runtime step. The backend just loads the saved output.
+Uses Google's hosted embeddings API rather than a local model -- local
+model inference was confirmed to be a 13+ second bottleneck per question on
+constrained hosting (Railway's free/hobby tier), so query-time embedding
+was moved to Google's infrastructure instead.
 """
 
+import os
 import pickle
-from sentence_transformers import SentenceTransformer
+import numpy as np
+from dotenv import load_dotenv
+load_dotenv()
+
+from google import genai
 from ai_act_data.articles import ARTICLES
 
-# small BERT model is chosen for embeddings. 6 layers.
-# lightweight so it can run locally
-MODEL_NAME = "all-MiniLM-L6-v2"  
-# pickle is used to save the embedding (numpy object)
-# this way the embedding only has to be done once
+EMBEDDING_MODEL = "gemini-embedding-001"
 OUTPUT_PATH = "ai_act_data/embeddings.pkl"
 
 
 def main():
-    print(f"Loading model '{MODEL_NAME}'... (downloads once, then cached)")
-    model = SentenceTransformer(MODEL_NAME)
-
-    texts = [article["text"] for article in ARTICLES]
-    print(f"Embedding {len(texts)} articles...")
-    embeddings = model.encode(texts, show_progress_bar=True)
+    client = genai.Client(api_key=os.environ["GOOGLE_API_KEY"])
 
     records = []
-    for article, embedding in zip(ARTICLES, embeddings):
+    for article in ARTICLES:
+        text = f"{article['title']}\n\n{article['text']}"
+        result = client.models.embed_content(model=EMBEDDING_MODEL, contents=text)
+        embedding = np.array(result.embeddings[0].values)
+
         records.append({
             "article_number": article["article_number"],
             "title": article["title"],
             "text": article["text"],
             "embedding": embedding,
         })
+        print(f"Embedded article {article['article_number']}: {article['title']}")
 
     with open(OUTPUT_PATH, "wb") as f:
         pickle.dump(records, f)

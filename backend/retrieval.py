@@ -1,35 +1,34 @@
 """
 Retrieval logic for the AI Act RAG pipeline. Loads the pre-computed article
-embeddings (embeddings.pkl) once when the backend starts, and exposes a function to find the
-most relevant articles for a given question.
+embeddings once when the backend starts, and finds the most relevant
+articles for a given question -- embedding the question via Google's hosted
+embeddings API (not a local model), since local inference was confirmed to
+be the actual latency bottleneck on constrained hosting.
 """
 
+import os
 import pickle
 import numpy as np
-from sentence_transformers import SentenceTransformer
+from google import genai
 
-MODEL_NAME = "all-MiniLM-L6-v2"  # must match the model used in build_embeddings.py
-EMBEDDINGS_PATH = "ai_act_data/embeddings.pkl" # path to pickle file
+EMBEDDING_MODEL = "gemini-embedding-001"  # must match build_embeddings.py
+EMBEDDINGS_PATH = "ai_act_data/embeddings.pkl"
 
-# Loaded once, at import time -- not on every request. Loading the model and
-# the embeddings file are both slow-ish operations (hundreds of ms)
-print("Loading embedding model and AI Act embeddings...")
-_model = SentenceTransformer(MODEL_NAME)
+_client = genai.Client(api_key=os.environ["GOOGLE_API_KEY"])
 
 with open(EMBEDDINGS_PATH, "rb") as f:
     _articles = pickle.load(f)
 
 print(f"Retrieval ready: {len(_articles)} articles loaded.")
 
-# How similar two vectors are, from -1 (opposite) to 1 (identical)
-# For sentence embeddings, values are typically 0 to 1 in practice.
+
 def cosine_similarity(a: np.ndarray, b: np.ndarray) -> float:
     return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))
 
-# Given a user's question, return the top_k most relevant AI Act
-# articles, ranked by similarity.
+
 def find_relevant_articles(question: str, top_k: int = 3) -> list[dict]:
-    query_embedding = _model.encode(question)
+    result = _client.models.embed_content(model=EMBEDDING_MODEL, contents=question)
+    query_embedding = np.array(result.embeddings[0].values)
 
     scored = []
     for article in _articles:

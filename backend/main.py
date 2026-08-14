@@ -38,6 +38,7 @@ from fastapi import Request
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
+import time
 
 app = FastAPI(title="EU AI Act Compliance Checker API")
 # IP-addresses are used to track the amount of requests per user and raise an error if the limit is exceeded.
@@ -260,7 +261,10 @@ rather than guessing."""
 @app.post("/api/chat", response_model=ChatResponse)
 @limiter.limit("10/minute")
 def chat(request: Request, payload: ChatRequest):
+    t0 = time.time()
     retrieved = find_relevant_articles(payload.question, top_k=3)
+    t1 = time.time()
+    print(f"Retrieval took {t1 - t0:.2f}s")
     system_prompt = build_system_prompt(payload.score_result, retrieved)
 
     messages = [{"role": m.role, "content": m.content} for m in payload.conversation_history]
@@ -273,12 +277,14 @@ def chat(request: Request, payload: ChatRequest):
         role = "model" if m.role == "assistant" else "user"
         gemini_history.append(types.Content(role=role, parts=[types.Part(text=m.content)]))
     gemini_history.append(types.Content(role="user", parts=[types.Part(text=payload.question)]))
-
+    t2 = time.time()
     response = client.models.generate_content(
         model=GEMINI_MODEL,
         contents=gemini_history,
         config=types.GenerateContentConfig(system_instruction=system_prompt),
     )
+    t3 = time.time()
+    print(f"Gemini generation took {t3 - t2:.2f}s")
 
     answer_text = response.text
 
