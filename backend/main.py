@@ -50,6 +50,8 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 ALLOWED_ORIGINS = [
     "http://localhost:5173", # vite standard port 
     "https://euaiact-chat.vercel.app",  # deployed link
+    "https://complywithai.eu",
+    "https://www.complywithai.eu",
 ]
 
 app.add_middleware(
