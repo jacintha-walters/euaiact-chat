@@ -1,20 +1,17 @@
 /**
  * ChatInterface - RAG-grounded chat UI, supporting two modes:
- *
- * 1. Scored mode (scoreResult prop provided): shown after a user completes
- *    the high-risk questionnaire. Opens with a score-based intro, sends the
- *    full score + every answered question with each request so the LLM can
- *    ground advice in the user's actual results, and auto-triggers a
- *    per-section weakness summary before the user types anything.
- *
- * 2. General Q&A mode (no scoreResult): used for the "I just have a
- *    question" path with no completed assessment. Opens with a plain
- *    welcome message, no auto-triggered summary, and score_result is
- *    omitted from requests entirely.
+ * scored (after questionnaire) and general Q&A (standalone).
+ * Rebuilt using shadcn/ui components.
  */
 
 import { useState, useRef, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
+import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
+import { Card } from "@/components/ui/card"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Badge } from "@/components/ui/badge"
+import { ArrowUp, MessageCircle } from "lucide-react"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
@@ -59,8 +56,6 @@ function ChatInterface({ scoreResult }) {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  // Only auto-trigger the weakness summary in scored mode -- general Q&A
-  // mode just waits for the user's own first question.
   useEffect(() => {
     if (hasScore && !hasAutoSent.current) {
       hasAutoSent.current = true
@@ -77,13 +72,8 @@ function ChatInterface({ scoreResult }) {
     setInput('')
     setLoading(true)
 
-    const requestBody = {
-      question,
-      conversation_history: historyBeforeThis,
-    }
-    if (hasScore) {
-      requestBody.score_result = scoreResult
-    }
+    const requestBody = { question, conversation_history: historyBeforeThis }
+    if (hasScore) requestBody.score_result = scoreResult
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/chat`, {
@@ -91,10 +81,7 @@ function ChatInterface({ scoreResult }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(requestBody),
       })
-
-      if (!response.ok) {
-        throw new Error(`Request failed with status ${response.status}`)
-      }
+      if (!response.ok) throw new Error(`Request failed with status ${response.status}`)
 
       const data = await response.json()
       setMessages((prev) => [...prev, { role: 'assistant', content: data.answer, sources: data.sources }])
@@ -122,62 +109,85 @@ function ChatInterface({ scoreResult }) {
   }
 
   return (
-    <div style={{ marginTop: '1.5rem', border: '1px solid #ccc', borderRadius: '8px', backgroundColor: 'white', display: 'flex', flexDirection: 'column', height: '500px' }}>
-      <div style={{ padding: '0.75rem', borderBottom: '1px solid #eee', fontWeight: 'bold' }}>
+    <Card className="mt-6 flex flex-col h-[500px] overflow-hidden p-0 rounded-3xl shadow-lg">
+      <div className="px-4 py-3 border-b font-semibold text-sm">
         {hasScore ? 'Ask about your results' : 'Ask about the EU AI Act'}
       </div>
 
-      <div style={{ flex: 1, overflowY: 'auto', padding: '1rem' }}>
-        {messages.map((msg, i) => (
-          <div key={i} style={{ marginBottom: '1rem', textAlign: msg.role === 'user' ? 'right' : 'left' }}>
-            <div
-              style={{
-                display: 'inline-block',
-                maxWidth: '80%',
-                padding: '0.6rem 0.9rem',
-                borderRadius: '10px',
-                backgroundColor: msg.role === 'user' ? 'var(--navy, #1976d2)' : '#f0f0f0',
-                color: msg.role === 'user' ? 'white' : 'black',
-                textAlign: 'left',
-              }}
-            >
-              {msg.role === 'assistant' ? (
-                <div className="markdown-answer">
-                  <ReactMarkdown>{msg.content}</ReactMarkdown>
-                </div>
-              ) : (
-                <span style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</span>
-              )}
-            </div>
-            {msg.sources && msg.sources.length > 0 && (
-              <div style={{ fontSize: '0.75rem', color: '#888', marginTop: '0.3rem' }}>
-                Sources: {msg.sources.map((s) => `Article ${s.article_number}`).join(', ')}
+      <ScrollArea className="flex-1 min-h-0 px-4">
+        <div className="py-4 space-y-4">
+          {messages.length === 1 && (
+            <div className="flex flex-col items-center justify-center text-center py-12 gap-2">
+              <div className="rounded-full bg-muted p-3">
+                <MessageCircle className="h-5 w-5 text-muted-foreground" />
               </div>
-            )}
-          </div>
-        ))}
-        {loading && <p style={{ color: '#888' }}>Thinking... this can take a few seconds.</p>}
-        <div ref={bottomRef} />
-      </div>
+              <p className="font-semibold">Ask about the EU AI Act</p>
+              <p className="text-sm text-muted-foreground max-w-[240px]">
+                {hasScore ? "Ask about your results, or anything else." : "Ask anything about the Act — press send to start."}
+              </p>
+            </div>
+          )}
+          {messages.map((msg, i) => (
+            <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <div className="max-w-[80%]">
+                <div
+                  className={`rounded-2xl px-4 py-2 text-sm ${
+                    msg.role === 'user'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-foreground'
+                  }`}
+                >
+                  {msg.role === 'assistant' ? (
+                    <div className="prose prose-sm max-w-none dark:prose-invert">
+                      <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    </div>
+                  ) : (
+                    <span className="whitespace-pre-wrap">{msg.content}</span>
+                  )}
+                </div>
+                {msg.sources && msg.sources.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-1.5">
+                    {msg.sources.map((s, idx) => (
+                      <Badge key={idx} variant="outline" className="text-xs font-normal rounded-full">
+                        Article {s.article_number}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+          {loading && (
+            <p className="text-sm text-muted-foreground animate-pulse">
+              Thinking... this can take a few seconds.
+            </p>
+          )}
+          <div ref={bottomRef} />
+        </div>
+      </ScrollArea>
 
-      <div style={{ display: 'flex', padding: '0.75rem', borderTop: '1px solid #eee' }}>
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Ask a question..."
-          rows={1}
-          maxLength={2000}
-          style={{ flex: 1, padding: '0.5rem', resize: 'none', border: '1px solid #ccc', borderRadius: '4px' }}
-        />
-        <span style={{ fontSize: '0.75rem', color: input.length > 1800 ? '#c62828' : '#999', marginLeft: '0.5rem', alignSelf: 'flex-end' }}>
-          {input.length}/2000
-        </span>
-        <button onClick={handleSend} disabled={loading} style={{ marginLeft: '0.5rem' }}>
-          Send
-        </button>
+<div className="p-3 border-t">
+        <div className="flex items-end gap-2 rounded-3xl border bg-muted/50 p-2">
+          <Textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Ask a question..."
+            rows={1}
+            maxLength={2000}
+            className="min-h-0 resize-none border-none shadow-none bg-transparent focus-visible:ring-0"
+          />
+          <Button
+            onClick={handleSend}
+            disabled={loading}
+            size="icon"
+            className="rounded-full shrink-0"
+          >
+            <ArrowUp className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
-    </div>
+    </Card>
   )
 }
 
