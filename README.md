@@ -140,12 +140,34 @@ remaining 5 correctly returned `429`.
 - **LLM10 (Model Theft)** — a hosted third-party API is used; no proprietary
   model to steal.
 
-### What a production version would add
+## Scaling Considerations
 
-- **Automated adversarial testing** — an attacker LLM systematically
-  generating and testing injection variants, rather than a manually curated
-  prompt suite.
-- **A distributed-attack-aware rate limiting layer** (a CDN/WAF), since
+This project made deliberate lightweight choices appropriate to its actual
+scale — a demo covering a curated 14-article corpus with modest traffic.
+Here's the decision I made:
+
+**Why not LangChain (or a similar heavy framework)?** LangChain works well
+when you need to orchestrate multiple chained LLM calls, several
+retrieval sources, agents, or complex tool-calling — none of which this
+project does. The actual RAG pipeline here is three straightforward steps:
+embed the question, compute cosine similarity against ~14 stored vectors,
+pass the top matches to one LLM call. 
+I'd reach for LangChain if this demo grew into a serious compliance tool with a lot more functionality.
+
+**Why not Pinecone (or another vector database)?** At 14 articles, a flat
+in-memory list with cosine similarity is faster to query than a network
+round-trip to a hosted vector database would be, has zero infrastructure to
+provision or pay for, and is trivial to reason about. A real deployment
+covering the whole 113-article regulation, versioned across amendments,
+with incremental updates, would be a reasonable step to migrate.
+
+**What else would change at real scale:**
+- **Hybrid retrieval** (keyword + semantic search) — pure semantic
+  similarity occasionally under-ranks exact matches like specific article
+  numbers, a production system would combine both.
+- **Automated adversarial testing** in place of the manual OWASP-structured
+  suite, for continuous regression testing as the system prompt evolves.
+- **A distributed-attack-aware rate limiting layer** since
   per-IP limiting mitigates casual abuse and cost overruns but not a
   genuine distributed attack from many sources at once.
 
