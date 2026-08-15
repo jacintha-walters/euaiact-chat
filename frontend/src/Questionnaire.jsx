@@ -1,12 +1,12 @@
 /**
- * Questionnaire - Step 2 of the assessment: the 50-question scored survey,
+ * Questionnaire - the 50-question scored survey,
  * shown after a user is classified as high-risk in GateForm.
  *
  * Fetches question definitions from the backend (GET /api/questionnaire/
  * questions), gives a page per section, and posts
  * answers to /api/questionnaire/submit for scoring. On success, shows the
- * score with a bar chart and hands the full result to ChatInterface (Step
- * 3) so the RAG chat can ground its answers in the user's actual answers.
+ * score with a bar chart and hands the full result to ChatInterface 
+ * so the RAG chat can ground its answers in the user's actual answers.
  * Includes a demo autofill button for quick end-to-end testing.
  */
 
@@ -149,10 +149,9 @@ function Questionnaire() {
 
           <p className="text-muted-foreground">
             You scored <strong className="text-foreground">{result.overall_percent}%</strong> overall.
-            This chatbot is grounded in the actual text of the EU AI Act, and it already
-            knows how you answered every question — so you can ask it about specific gaps
-            and it'll point you to exactly what needs to improve, with the right articles
-            cited.
+            Now you can take a moment to understand what this score means and how you can improve it.
+            This chatbot already knows how you answered every question — so you can get specific. 
+            Try it out, for instance 'what should be my number one priority?', 'how can I bring my compliance score to 100%?'
           </p>
         </div>
 

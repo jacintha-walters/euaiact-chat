@@ -123,7 +123,7 @@ function ChatInterface({ scoreResult }) {
   };
 
   return (
-    <Card className="flex flex-col h-[70vh] lg:h-[70vh] min-h-[40rem] max-w-[80ch] overflow-hidden p-4 rounded-3xl border border-primary shadow-lg">
+    <Card className="flex flex-col h-[60vh] lg:h-[70vh] min-h-[30rem] max-w-[80ch] overflow-hidden p-4 rounded-3xl border border-primary shadow-lg">
       <ScrollArea
         viewportRef={scrollViewportRef}
         className="flex-1 min-h-0 px-4"
@@ -137,7 +137,7 @@ function ChatInterface({ scoreResult }) {
             <p className="text-sm text-muted-foreground max-w-[240px]">
               {hasScore
                 ? "Ask about your results, or anything else."
-                : "Ask anything about the Act — press send to start."}
+                : "Press send to start."}
             </p>
             <p className="italic text-muted-foregroun opacity-50 max-w-[50ch] mt-8">
               This assistant can make mistakes. It's grounded in the EU AI Act

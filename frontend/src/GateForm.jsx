@@ -3,9 +3,7 @@
  *
  * Asks 4 yes/no questions and routes the user to one of 5 dedicated result
  * pages based on their answers: prohibited, gpai, high-risk, limited-risk,
- * or minimal-risk. The high-risk page is the only one that leads further --
- * it reveals the Questionnaire component (Step 2) once the user continues,
- * which in turn renders ChatInterface (Step 3) once a score exists.
+ * or minimal-risk. 
  */
 
 import { useState } from "react";

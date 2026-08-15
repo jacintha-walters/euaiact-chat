@@ -1,3 +1,21 @@
+/**
+ * Comply with AI - Frontend entry point.
+ *
+ * Renders the persistent header (logo, Why/Who info modals) and switches
+ * between three views based on user choice from the landing page:
+ *
+ *   landing    -> LandingPage: explains the tool, offers two paths
+ *   assessment -> GateForm: risk-tier classification, then (for high-risk
+ *                 systems) the 50-question scored Questionnaire, which
+ *                 renders ChatInterface with the user's score once complete
+ *   chat       -> a standalone ChatInterface with no score attached, for
+ *                 users who just want to ask a question without the full
+ *                 assessment
+ *
+ * ChatInterface itself supports both modes (scored vs. general Q&A) via
+ * an optional scoreResult prop -- see ChatInterface.jsx.
+ */
+
 import { useEffect, useState } from "react";
 import LandingPage from "../LandingPage.jsx";
 import GateForm from "../GateForm.jsx";
@@ -159,8 +177,8 @@ function App() {
                   Grounded in the actual law
                 </h1>
                 <p>
-                  No guessing, no generic advice. Every answer is checked against
-                  the real text of the EU AI Act — with the specific articles it's based on shown right
+                  Every answer is checked against
+                  the real text of the EU AI Act — with the specific articles it's based on shown
                   alongside the answer.
                 </p>
               </div>

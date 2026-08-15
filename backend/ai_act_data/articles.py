@@ -6,8 +6,7 @@ hosts the official translation.
 
 This is a curated subset -- not the full 113-article regulation -- focused on
 the articles most relevant to the questionnaire's scoring categories (risk
-management, data governance, technical documentation). More articles will be
-added incrementally the same way the questionnaire was built.
+management, data governance, technical documentation).
 
 Each entry is one article, kept as one chunk (not split into paragraphs) --
 articles in this Act are short enough that article-level chunking gives

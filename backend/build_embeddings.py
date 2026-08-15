@@ -5,10 +5,7 @@ API and saves the vectors to disk.
 Run manually whenever ai_act_data/articles.py changes:
     python build_embeddings.py
 
-Uses Google's hosted embeddings API rather than a local model -- local
-model inference was confirmed to be a 13+ second bottleneck per question on
-constrained hosting (Railway's free/hobby tier), so query-time embedding
-was moved to Google's infrastructure instead.
+Uses Google's hosted embeddings API rather than a local model (too slow when hosted)
 """
 
 import os

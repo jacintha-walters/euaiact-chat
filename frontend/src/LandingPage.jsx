@@ -3,8 +3,8 @@
  *
  * Explains what the tool is, links to the original 2023 research paper,
  * and offers two paths: a full 10-minute risk classification + scored
- * assessment (onStartAssessment), or a quick, no-commitment question
- * answered by the general-purpose chatbot (onStartChat).
+ * assessment (onStartAssessment), or a quick, question
+ * answered by the EU AI Act chatbot (onStartChat).
  */
 
 import {
