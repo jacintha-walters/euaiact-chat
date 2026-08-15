@@ -5,7 +5,6 @@ EU AI Act — choose a fast, open-ended chat for quick questions, or a full
 10-minute scored compliance assessment grounded in original academic research.
 
 **Live site:** [complywithai.eu](https://complywithai.eu)
-**API docs:** [Railways backend](euaiact-chat-production.up.railway.app/docs)
 
 ---
 
