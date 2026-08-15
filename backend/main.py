@@ -42,7 +42,16 @@ import time
 
 app = FastAPI(title="EU AI Act Compliance Checker API")
 # IP-addresses are used to track the amount of requests per user and raise an error if the limit is exceeded.
-limiter = Limiter(key_func=get_remote_address)
+def get_real_client_ip(request: Request) -> str:
+    forwarded = request.headers.get("x-forwarded-for")
+    if forwarded:
+        # X-Forwarded-For can be a chain (client, proxy1, proxy2...) -- the
+        # first entry is the original caller
+        return forwarded.split(",")[0].strip()
+    return request.client.host  # fallback for local dev, no proxy present
+
+
+limiter = Limiter(key_func=get_real_client_ip)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
