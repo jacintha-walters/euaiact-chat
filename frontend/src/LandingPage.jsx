@@ -33,14 +33,14 @@ function LandingPage({ onStartAssessment, onStartChat }) {
         <div className="flex flex-col gap-4">
           <p className="">
             Regulation like this can feel overwhelming, especially when you're not sure if it even applies to you. 
-            The EU AI Act (Regulation (EU) 2024/1689) has been in force since August 2024, with most of its obligations now 
+            The EU AI Act has been in force since August 2024, with most of its obligations now 
             active since August 2026, and it reaches any organization whose AI systems affect people in the EU, 
             no matter where you're based.
           </p>
 
           <p className="">
             That's exactly why this tool exists. Whether you're a small business wondering 
-            if the rules apply to you at all, or a compliance team hunting for concrete gaps in 
+            if the rules apply to you, or a compliance team hunting for concrete gaps in 
             an existing high-risk system, this tool will help you find a clear answer!
           </p>
         </div>
