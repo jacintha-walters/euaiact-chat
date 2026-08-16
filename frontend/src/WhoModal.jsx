@@ -14,7 +14,7 @@ function WhoModal() {
         <div className="flex flex-wrap gap-1">
           <a
             className="text-primary hover:text-primary-700"
-            href="https://www.linkedin.com/in/jacinthawalters/"
+            href="https://www.linkedin.com/in/jacinthavanzelderen/"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -23,7 +23,7 @@ function WhoModal() {
           {" · "}
           <a
             className="text-primary hover:text-primary-700"
-            href="https://github.com/jacintha-walters"
+            href="https://github.com/jacintha-van-zelderen"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -32,9 +32,9 @@ function WhoModal() {
           {" · "}
           <a
             className="text-primary hover:text-primary-700"
-            href="mailto:jacintha.walters@gmail.com"
+            href="mailto:jacinthavanzelderen@gmail.com"
           >
-            jacintha.walters@gmail.com
+            jacinthavanzelderen@gmail.com
           </a>
         </div>
       </div>
