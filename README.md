@@ -225,5 +225,5 @@ Visit http://localhost:5173.
 
 Jacintha Walters — AI & Cybersecurity specialist. This project builds on
 [my 2023 paper on EU AI Act compliance](https://arxiv.org/abs/2307.10458).
-[LinkedIn](https://www.linkedin.com/in/jacinthawalters/) ·
-[GitHub](https://github.com/jacintha-walters)
+[LinkedIn](https://www.linkedin.com/in/jacinthavanzelderen/) ·
+[GitHub](https://github.com/jacintha-van-zelderen)
