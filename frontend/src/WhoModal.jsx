@@ -100,6 +100,23 @@ function WhoModal() {
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-1">
             <p className="mb-0.5">
+              <strong>Independent Work, Study and Travel</strong> — Europe
+            </p>
+            <p className="mt-0 text-sm text-muted-foreground">
+              09.2024 – Present
+            </p>
+            <ul className="mt-2 flex list-disc flex-col gap-1 pl-5">
+              <li>
+                Self-directed period combining travel through Europe with technical projects and certification study.
+              </li>
+              <li>
+                Enrolled in an AWS Cloud Architecture course and actively working towards certification (expected 09-2026)
+              </li>
+            </ul>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <p className="mb-0.5">
               <strong>Cybersecurity Coordinator</strong> — Amsterdam University
               of Applied Sciences (Make IT Work), Netherlands
             </p>
@@ -191,25 +208,6 @@ function WhoModal() {
               <li>
                 Delivered a structured technical report outlining mitigation
                 strategies for all 23 risks.
-              </li>
-            </ul>
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <p className="mb-0.5">
-              <strong>Independent Freelancer</strong> — Europe
-            </p>
-            <p className="mt-0 text-sm text-muted-foreground">
-              02.2025 – Present
-            </p>
-            <ul className="mt-2 flex list-disc flex-col gap-1 pl-5">
-              <li>
-                Built an independent YouTube channel, reaching 15,000
-                subscribers and 1,000,000 views.
-              </li>
-              <li>
-                Improved watch time per viewer by 25% through A/B testing and
-                market research.
               </li>
             </ul>
           </div>
